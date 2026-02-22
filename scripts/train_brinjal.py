@@ -48,12 +48,29 @@ from sklearn.metrics import (
 # For Grad-CAM
 import cv2
 
+# GPU Configuration
+from gpu_config import setup_gpu, get_strategy
+
 # Set seeds for reproducibility
 np.random.seed(42)
 tf.random.set_seed(42)
 
-print(f"TensorFlow version: {tf.__version__}")
-print(f"GPU Available: {tf.config.list_physical_devices('GPU')}")
+# Setup GPU with optimal settings
+print("\n" + "="*70)
+print("🔧 CONFIGURING GPU FOR BRINJAL MODEL TRAINING")
+print("="*70)
+gpu_info = setup_gpu(
+    memory_growth=True,
+    mixed_precision=True,
+    verbose=True
+)
+
+print(f"\nTensorFlow version: {tf.__version__}")
+if gpu_info['gpu_available']:
+    print(f"✓ Training on GPU: {gpu_info['gpu_names']}")
+    print(f"✓ Mixed precision: {gpu_info['mixed_precision']}")
+else:
+    print("⚠️ Training on CPU (this will be slow)")
 
 # =============================================================================
 # 2. CONFIGURATION

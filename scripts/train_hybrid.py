@@ -86,6 +86,9 @@ from sklearn.metrics import (
 # For Grad-CAM
 import cv2
 
+# GPU Configuration
+from gpu_config import setup_gpu, get_strategy
+
 # Logging
 from logger_config import setup_logger, TrainingLogger
 import time
@@ -93,6 +96,16 @@ import time
 # Set seeds for reproducibility
 np.random.seed(42)
 tf.random.set_seed(42)
+
+# Setup GPU FIRST before logger (to capture GPU info)
+print("\n" + "="*70)
+print("🔧 CONFIGURING GPU FOR HYBRID MODEL TRAINING")
+print("="*70)
+gpu_info = setup_gpu(
+    memory_growth=True,
+    mixed_precision=True,
+    verbose=True
+)
 
 # Initialize logger
 logger = setup_logger(
@@ -104,7 +117,12 @@ logger = setup_logger(
 train_logger = TrainingLogger(logger, log_dir='logs/hybrid')
 
 logger.info(f"TensorFlow version: {tf.__version__}")
-logger.info(f"GPU Available: {tf.config.list_physical_devices('GPU')}")
+if gpu_info['gpu_available']:
+    logger.info(f"✓ Training on GPU: {gpu_info['gpu_names']}")
+    logger.info(f"✓ Mixed precision: {gpu_info['mixed_precision']}")
+    logger.info(f"✓ Strategy: {gpu_info['strategy']}")
+else:
+    logger.warning("⚠️ Training on CPU (this will be slow)")
 
 # =============================================================================
 # 2. CONFIGURATION
@@ -1532,14 +1550,8 @@ def create_combined_dataset(config, output_dir=None):
 # =============================================================================
 
 if __name__ == "__main__":
-    # GPU setup
-    gpus = tf.config.list_physical_devices('GPU')
-    if gpus:
-        print(f"\n🖥️ GPU(s) detected: {len(gpus)}")
-        for gpu in gpus:
-            tf.config.experimental.set_memory_growth(gpu, True)
-    else:
-        print("\n⚠️ No GPU detected. Training on CPU (slower).")
+    # GPU already configured at module level via gpu_config
+    # Just run training
     
     # Uncomment to create combined dataset first:
     # create_combined_dataset(Config())
