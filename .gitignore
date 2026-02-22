@@ -93,9 +93,11 @@ models/*.keras
 backend/static/uploads/*
 !backend/static/uploads/.gitkeep
 
-# Logs
-logs/
+# Logs (exclude all log files but keep README)
+logs/**/*.log
+logs/**/*.csv
 *.log
+!logs/README.md
 
 # Raspberry Pi specific
 scripts/pi_deploy/__pycache__/

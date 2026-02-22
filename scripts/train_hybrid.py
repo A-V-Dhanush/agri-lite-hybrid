@@ -86,12 +86,25 @@ from sklearn.metrics import (
 # For Grad-CAM
 import cv2
 
+# Logging
+from logger_config import setup_logger, TrainingLogger
+import time
+
 # Set seeds for reproducibility
 np.random.seed(42)
 tf.random.set_seed(42)
 
-print(f"TensorFlow version: {tf.__version__}")
-print(f"GPU Available: {tf.config.list_physical_devices('GPU')}")
+# Initialize logger
+logger = setup_logger(
+    name='hybrid_training',
+    log_dir='logs/hybrid',
+    console_level=10,  # DEBUG
+    file_level=10       # DEBUG
+)
+train_logger = TrainingLogger(logger, log_dir='logs/hybrid')
+
+logger.info(f"TensorFlow version: {tf.__version__}")
+logger.info(f"GPU Available: {tf.config.list_physical_devices('GPU')}")
 
 # =============================================================================
 # 2. CONFIGURATION
