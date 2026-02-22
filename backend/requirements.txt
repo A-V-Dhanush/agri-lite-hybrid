@@ -27,13 +27,18 @@ Flask-Session==0.5.0
 cachelib==0.13.0
 
 # ML / Deep Learning
-tensorflow==2.16.1
-numpy==1.26.4
-Pillow==10.2.0
-opencv-python-headless==4.9.0.80
+tensorflow>=2.16.0
+numpy>=1.26.0
+Pillow>=10.2.0
+opencv-python-headless>=4.9.0
 
 # Image Processing
-scikit-image==0.22.0
+scikit-image>=0.22.0
+
+# Data Science
+matplotlib>=3.8.0
+seaborn>=0.13.0
+scikit-learn>=1.4.0
 
 # Utilities
 Werkzeug==3.0.1

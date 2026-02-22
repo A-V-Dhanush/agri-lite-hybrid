@@ -1,0 +1,40 @@
+# =============================================================================
+# AgriLite-Hybrid - Training Requirements
+# For running train_brinjal.py, train_tomato.py, train_chilli.py, train_hybrid.py
+# 
+# Install with: pip install -r requirements_training.txt
+# =============================================================================
+
+# Deep Learning Framework
+tensorflow>=2.16.0
+
+# Data Processing
+numpy>=1.26.0
+pandas>=2.2.0
+
+# Image Processing
+Pillow>=10.2.0
+opencv-python>=4.9.0
+scikit-image>=0.22.0
+
+# Machine Learning Utilities
+scikit-learn>=1.4.0
+
+# Visualization
+matplotlib>=3.8.0
+seaborn>=0.13.0
+
+# Progress Bars (optional)
+tqdm>=4.66.0
+
+# For TFLite conversion verification
+# tflite-runtime>=2.14.0  # Uncomment to test TFLite models
+
+# =============================================================================
+# GPU Support (Optional - for faster training)
+# =============================================================================
+# For NVIDIA GPUs, install CUDA toolkit and:
+# pip install tensorflow[and-cuda]
+#
+# Or use Google Colab for free GPU access
+# =============================================================================
