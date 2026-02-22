@@ -88,11 +88,18 @@ else:
 # =============================================================================
 # 2. CONFIGURATION
 # =============================================================================
+
+# Get project root directory (parent of scripts/)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+
 class Config:
     """Training configuration parameters for Chilli model"""
     
-    # Dataset paths - Pre-split train/val/test folders
-    DATA_DIR = r"D:\rts project\agri-lite-hybrid\DataSets\chilli\Chilli Plant Diseases Dataset(Augmented)\Chilli Plant Diseases Dataset"
+    # Dataset paths - RELATIVE from project root (works on Windows & Linux)
+    DATA_DIR = os.path.join(PROJECT_ROOT, "DataSets", "chilli", 
+                            "Chilli Plant Diseases Dataset(Augmented)", 
+                            "Chilli Plant Diseases Dataset")
     TRAIN_DIR = os.path.join(DATA_DIR, "train")
     VAL_DIR = os.path.join(DATA_DIR, "valid")
     TEST_DIR = os.path.join(DATA_DIR, "test")

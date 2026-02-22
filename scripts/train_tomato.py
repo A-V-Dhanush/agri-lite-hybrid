@@ -85,11 +85,16 @@ else:
 # =============================================================================
 # 2. CONFIGURATION
 # =============================================================================
+
+# Get project root directory (parent of scripts/)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+
 class Config:
     """Training configuration parameters for Tomato model"""
     
-    # Dataset paths - Pre-split train/val folders
-    DATA_DIR = r"D:\rts project\agri-lite-hybrid\DataSets\tamota"
+    # Dataset paths - RELATIVE from project root (works on Windows & Linux)
+    DATA_DIR = os.path.join(PROJECT_ROOT, "DataSets", "tamota")
     TRAIN_DIR = os.path.join(DATA_DIR, "train")
     VAL_DIR = os.path.join(DATA_DIR, "valid")
     

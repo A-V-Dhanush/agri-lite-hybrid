@@ -28,8 +28,12 @@ import random
 from pathlib import Path
 from collections import defaultdict
 
-# Configuration
-BASE_DIR = r"D:\rts project\agri-lite-hybrid\DataSets"
+# Get project root directory (parent of scripts/)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+
+# Configuration - RELATIVE paths from project root (works on Windows & Linux)
+BASE_DIR = os.path.join(PROJECT_ROOT, "DataSets")
 OUTPUT_DIR = os.path.join(BASE_DIR, "combined")
 
 # Crop dataset paths and configurations

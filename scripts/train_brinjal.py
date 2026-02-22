@@ -75,19 +75,24 @@ else:
 # =============================================================================
 # 2. CONFIGURATION
 # =============================================================================
+
+# Get project root directory (parent of scripts/)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+
 class Config:
     """Training configuration parameters"""
     
-    # Dataset paths - UPDATE THESE TO YOUR LOCAL PATHS
-    # Option 1: If you have train/val/test split already
-    # DATA_DIR = "data/brinjal"
-    # TRAIN_DIR = os.path.join(DATA_DIR, "train")
-    # VAL_DIR = os.path.join(DATA_DIR, "val")
-    # TEST_DIR = os.path.join(DATA_DIR, "test")
+    # Dataset paths - RELATIVE from project root (works on Windows & Linux)
+    # Update these paths to match your dataset location
+    DATA_DIR = os.path.join(PROJECT_ROOT, "DataSets", "eggplant", 
+                            "Eggplant Disease Recognition Dataset", 
+                            "Augmented Images (Version 02)", 
+                            "Augmented Images (Version 02)")
     
-    # Option 2: Use the Kaggle dataset structure (Augmented Images Version 02)
-    # This script will auto-split if needed
-    DATA_DIR = r"D:\rts project\agri-lite-hybrid\DataSets\eggplant\Eggplant Disease Recognition Dataset\Augmented Images (Version 02)\Augmented Images (Version 02)"
+    # Alternative: Use combined dataset
+    # DATA_DIR = os.path.join(PROJECT_ROOT, "DataSets", "combined", "train")
+    # Look for brinjal_* classes only
     
     # Model parameters
     MODEL_NAME = "brinjal_efficientnetv2b0_cbam"
