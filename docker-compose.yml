@@ -1,0 +1,77 @@
+# =============================================================================
+# AgriLite-Hybrid - Docker Compose Configuration
+# Local Development Environment
+# =============================================================================
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: agrilite-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: agrilite
+      POSTGRES_PASSWORD: agrilite_dev_password
+      POSTGRES_DB: agrilite
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agrilite"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Flask Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: agrilite-backend
+    restart: unless-stopped
+    environment:
+      - FLASK_ENV=development
+      - DATABASE_URL=postgresql://agrilite:agrilite_dev_password@db:5432/agrilite
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - JWT_SECRET_KEY=dev-jwt-secret-change-in-production
+    volumes:
+      - ./backend:/app
+      - ./models:/app/models
+      - backend_uploads:/app/static/uploads
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: python app.py
+
+  # React Frontend (Development)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: agrilite-frontend
+    restart: unless-stopped
+    environment:
+      - VITE_API_BASE_URL=http://localhost:5000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    command: npm run dev -- --host
+
+volumes:
+  postgres_data:
+    name: agrilite_postgres_data
+  backend_uploads:
+    name: agrilite_uploads
+
+networks:
+  default:
+    name: agrilite-network

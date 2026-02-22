@@ -1,0 +1,6 @@
+# Place your TFLite model here
+# Expected file: agrilite_model.tflite
+
+This directory should contain:
+- agrilite_model.tflite - TensorFlow Lite model for inference
+- class_labels.json - Class label mappings (can be symlinked from shared/models/)

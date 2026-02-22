@@ -1,0 +1,329 @@
+/* =============================================================================
+ * AgriLite-Hybrid Frontend
+ * src/index.css - Global Styles
+ * 
+ * Includes Tailwind CSS directives and custom global styles.
+ * ============================================================================= */
+
+/* Tailwind CSS Directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =============================================================================
+ * Base Layer - Reset and foundation styles
+ * ============================================================================= */
+@layer base {
+  /* Root variables */
+  :root {
+    --color-primary: #16a34a;
+    --color-secondary: #059669;
+    --color-accent: #f59e0b;
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Base body styles */
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  /* Heading styles */
+  h1 {
+    @apply text-4xl font-bold font-heading text-gray-900;
+  }
+
+  h2 {
+    @apply text-3xl font-semibold font-heading text-gray-900;
+  }
+
+  h3 {
+    @apply text-2xl font-semibold font-heading text-gray-800;
+  }
+
+  h4 {
+    @apply text-xl font-semibold text-gray-800;
+  }
+
+  /* Link base styles */
+  a {
+    @apply transition-colors duration-200;
+  }
+
+  /* Focus visible styles for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Selection color */
+  ::selection {
+    @apply bg-primary-200 text-primary-900;
+  }
+}
+
+/* =============================================================================
+ * Components Layer - Reusable component styles
+ * ============================================================================= */
+@layer components {
+  /* Button base styles */
+  .btn {
+    @apply inline-flex items-center justify-center px-6 py-3 
+           font-medium rounded-xl transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-600 text-white 
+           hover:bg-primary-700 active:bg-primary-800
+           focus:ring-primary-500 shadow-button;
+  }
+
+  .btn-secondary {
+    @apply btn bg-white text-primary-700 border-2 border-primary-600
+           hover:bg-primary-50 active:bg-primary-100
+           focus:ring-primary-500;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600 text-white
+           hover:bg-red-700 active:bg-red-800
+           focus:ring-red-500;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-gray-700
+           hover:bg-gray-100 active:bg-gray-200
+           focus:ring-gray-500;
+  }
+
+  /* Input field styles */
+  .input {
+    @apply w-full px-4 py-3 text-gray-900 bg-white
+           border border-gray-300 rounded-xl
+           placeholder:text-gray-400
+           focus:outline-none focus:ring-2 focus:ring-primary-500 
+           focus:border-transparent
+           transition-shadow duration-200;
+  }
+
+  .input-error {
+    @apply input border-red-500 focus:ring-red-500;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-2xl shadow-card p-6
+           transition-shadow duration-300
+           hover:shadow-card-hover;
+  }
+
+  .card-flat {
+    @apply bg-white rounded-2xl border border-gray-200 p-6;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 
+           text-sm font-medium rounded-full;
+  }
+
+  .badge-success {
+    @apply badge bg-green-100 text-green-800;
+  }
+
+  .badge-warning {
+    @apply badge bg-amber-100 text-amber-800;
+  }
+
+  .badge-danger {
+    @apply badge bg-red-100 text-red-800;
+  }
+
+  .badge-info {
+    @apply badge bg-blue-100 text-blue-800;
+  }
+
+  /* Severity badge styles */
+  .severity-mild {
+    @apply bg-green-100 text-green-800 border border-green-200;
+  }
+
+  .severity-medium {
+    @apply bg-amber-100 text-amber-800 border border-amber-200;
+  }
+
+  .severity-severe {
+    @apply bg-red-100 text-red-800 border border-red-200;
+  }
+
+  /* Container styles */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section padding */
+  .section-padding {
+    @apply py-12 sm:py-16 lg:py-20;
+  }
+
+  /* Loading skeleton */
+  .skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-600 to-secondary-600 
+           bg-clip-text text-transparent;
+  }
+
+  /* Image upload drop zone */
+  .drop-zone {
+    @apply border-2 border-dashed border-gray-300 rounded-2xl
+           p-8 text-center cursor-pointer
+           transition-all duration-200
+           hover:border-primary-500 hover:bg-primary-50/50;
+  }
+
+  .drop-zone-active {
+    @apply border-primary-500 bg-primary-50 scale-[1.02];
+  }
+}
+
+/* =============================================================================
+ * Utilities Layer - Custom utility classes
+ * ============================================================================= */
+@layer utilities {
+  /* Text balance for better typography */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Gradient backgrounds */
+  .bg-gradient-primary {
+    @apply bg-gradient-to-br from-primary-500 via-primary-600 to-secondary-600;
+  }
+
+  .bg-gradient-hero {
+    @apply bg-gradient-to-br from-primary-50 via-white to-secondary-50;
+  }
+
+  /* Animation delays */
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  /* Hover scale effect */
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+
+  /* Glass effect */
+  .glass {
+    @apply bg-white/80 backdrop-blur-lg;
+  }
+}
+
+/* =============================================================================
+ * Custom Animations
+ * ============================================================================= */
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Slide up animation */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pulse ring animation (for processing state) */
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+.animate-pulse-ring {
+  animation: pulseRing 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Scanning line animation (for image analysis) */
+@keyframes scan {
+  0% {
+    top: 0;
+  }
+  50% {
+    top: calc(100% - 4px);
+  }
+  100% {
+    top: 0;
+  }
+}
+
+.animate-scan {
+  animation: scan 2s ease-in-out infinite;
+}
+
+/* =============================================================================
+ * Print Styles
+ * ============================================================================= */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    @apply bg-white text-black;
+  }
+
+  .card {
+    @apply shadow-none border border-gray-300;
+  }
+}
