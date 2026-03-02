@@ -25,7 +25,17 @@ import type {
 // API Configuration
 // =============================================================================
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+// Auto-detect API URL based on current hostname (supports network access)
+const getApiBaseUrl = () => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  // Use the same hostname as the frontend, but with backend port 5000
+  const hostname = window.location.hostname;
+  return `http://${hostname}:5000`;
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 /**
  * Create configured Axios instance with interceptors

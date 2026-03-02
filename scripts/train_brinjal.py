@@ -26,8 +26,8 @@ warnings.filterwarnings('ignore')
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers, Model
-from tensorflow.keras.applications import EfficientNetV2B0
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.applications import EfficientNetV2B0  # type: ignore
+from tensorflow.keras.preprocessing.image import ImageDataGenerator  # type: ignore
 from tensorflow.keras.callbacks import (
     EarlyStopping, 
     ModelCheckpoint, 

@@ -99,13 +99,12 @@ def init_extensions(app):
     bcrypt.init_app(app)
     
     # CORS - Cross Origin Resource Sharing
-    cors.init_app(
-        app,
-        origins=app.config.get('CORS_ORIGINS', ['http://localhost:5173']),
-        supports_credentials=app.config.get('CORS_SUPPORTS_CREDENTIALS', True),
-        allow_headers=['Content-Type', 'Authorization'],
-        methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-    )
+    # Initialize CORS directly with the app for proper preflight handling
+    from flask_cors import CORS
+    CORS(app, resources={r"/*": {"origins": "*"}}, 
+         supports_credentials=False,
+         allow_headers=['Content-Type', 'Authorization', 'X-Requested-With'],
+         methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'])
     
     # Rate limiting
     limiter.init_app(app)

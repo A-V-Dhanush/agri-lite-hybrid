@@ -120,7 +120,7 @@ class AgriLiteHybridInference:
         
         # Import TFLite runtime (prefer lite version for Pi)
         try:
-            import tflite_runtime.interpreter as tflite
+            import tflite_runtime.interpreter as tflite  # type: ignore
             self.tflite = tflite
             logger.info("Using tflite-runtime")
         except ImportError:
@@ -423,7 +423,7 @@ def setup_camera(config: InferenceConfig):
     
     try:
         # Try picamera2 first (newer Pi OS)
-        from picamera2 import Picamera2
+        from picamera2 import Picamera2  # type: ignore
         
         camera = Picamera2()
         camera_config = camera.create_preview_configuration(
@@ -439,8 +439,8 @@ def setup_camera(config: InferenceConfig):
     except ImportError:
         try:
             # Fallback to legacy picamera
-            from picamera import PiCamera
-            from picamera.array import PiRGBArray
+            from picamera import PiCamera  # type: ignore
+            from picamera.array import PiRGBArray  # type: ignore
             
             camera = PiCamera()
             camera.resolution = (config.CAMERA_WIDTH, config.CAMERA_HEIGHT)
@@ -476,6 +476,7 @@ def capture_frame(camera, camera_type: str) -> np.ndarray:
         return raw_capture.array
     
     else:  # opencv
+        import cv2
         ret, frame = camera.read()
         if ret:
             return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)

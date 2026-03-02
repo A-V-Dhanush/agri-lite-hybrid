@@ -39,8 +39,8 @@ warnings.filterwarnings('ignore')
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers, Model
-from tensorflow.keras.applications import MobileNetV3Small
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.applications import MobileNetV3Small  # type: ignore
+from tensorflow.keras.preprocessing.image import ImageDataGenerator  # type: ignore
 from tensorflow.keras.callbacks import (
     EarlyStopping, 
     ModelCheckpoint, 
@@ -321,7 +321,7 @@ def build_mobilenetv3_model(input_shape, num_classes, use_large=False):
     
     # Choose model variant
     if use_large:
-        from tensorflow.keras.applications import MobileNetV3Large
+        from tensorflow.keras.applications import MobileNetV3Large  # type: ignore
         base_model = MobileNetV3Large(
             include_top=False,
             weights='imagenet',

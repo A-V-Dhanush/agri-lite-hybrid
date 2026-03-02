@@ -68,7 +68,7 @@ class Config:
     # ==========================================================================
     # CORS Configuration
     # ==========================================================================
-    CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5173').split(',')
+    CORS_ORIGINS = os.getenv('CORS_ORIGINS', '*').split(',')
     CORS_SUPPORTS_CREDENTIALS = True
     
     # ==========================================================================
