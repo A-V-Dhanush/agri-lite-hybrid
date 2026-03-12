@@ -97,12 +97,14 @@ class Config:
     """Training configuration parameters for Chilli model"""
     
     # Dataset paths - RELATIVE from project root (works on Windows & Linux)
-    DATA_DIR = os.path.join(PROJECT_ROOT, "DataSets", "chilli", 
-                            "Chilli Plant Diseases Dataset(Augmented)", 
-                            "Chilli Plant Diseases Dataset")
+    # Use combined dataset with chilli-prefixed classes
+    DATA_DIR = os.path.join(PROJECT_ROOT, "DataSets", "combined")
     TRAIN_DIR = os.path.join(DATA_DIR, "train")
-    VAL_DIR = os.path.join(DATA_DIR, "valid")
+    VAL_DIR = os.path.join(DATA_DIR, "val")
     TEST_DIR = os.path.join(DATA_DIR, "test")
+    
+    # Filter: only use chilli classes (starts with "chilli_")
+    CROP_FILTER = "chilli_"
     
     # Model parameters
     MODEL_NAME = "chilli_mobilenetv3small"
@@ -190,45 +192,70 @@ def create_data_generators(config):
     # Validation/Test data generator (no augmentation, only rescale)
     val_test_datagen = ImageDataGenerator(rescale=1./255)
     
+    # ── Auto-discover chilli-only class subdirectories ─────────────────────
+    # Using flow_from_directory(classes=...) loads ONLY those subdirs,
+    # so steps_per_epoch is correct and no per-sample Python filtering needed.
+    def _discover_classes(split_dir, prefix):
+        if not os.path.isdir(split_dir):
+            raise FileNotFoundError(f"Split directory not found: {split_dir}")
+        dirs = sorted(d for d in os.listdir(split_dir)
+                      if d.startswith(prefix) and os.path.isdir(os.path.join(split_dir, d)))
+        if not dirs:
+            all_dirs = [d for d in os.listdir(split_dir) if os.path.isdir(os.path.join(split_dir, d))]
+            raise ValueError(
+                f"No subdirectories matching '{prefix}*' found in {split_dir}.\n"
+                f"Available: {all_dirs}\n"
+                f"Run 'python scripts/combine_datasets.py' first."
+            )
+        return dirs
+
+    chilli_train_dirs = _discover_classes(config.TRAIN_DIR, config.CROP_FILTER)
+    chilli_val_dirs   = _discover_classes(config.VAL_DIR,   config.CROP_FILTER)
+    chilli_test_dirs  = _discover_classes(config.TEST_DIR,  config.CROP_FILTER)
+
     print(f"\nLoading data from: {config.DATA_DIR}")
     print(f"  Train: {config.TRAIN_DIR}")
     print(f"  Val:   {config.VAL_DIR}")
     print(f"  Test:  {config.TEST_DIR}")
-    
-    # Training generator
+    print(f"  Chilli classes found ({len(chilli_train_dirs)}): {chilli_train_dirs}")
+
+    # Training generator — ONLY chilli subdirs
     train_generator = train_datagen.flow_from_directory(
         config.TRAIN_DIR,
+        classes=chilli_train_dirs,
         target_size=config.INPUT_SHAPE[:2],
         batch_size=config.BATCH_SIZE,
         class_mode='categorical',
         shuffle=True,
         seed=42
     )
-    
-    # Validation generator
+
+    # Validation generator — ONLY chilli subdirs
     val_generator = val_test_datagen.flow_from_directory(
         config.VAL_DIR,
+        classes=chilli_val_dirs,
         target_size=config.INPUT_SHAPE[:2],
         batch_size=config.BATCH_SIZE,
         class_mode='categorical',
         shuffle=False,
         seed=42
     )
-    
-    # Test generator
+
+    # Test generator — ONLY chilli subdirs
     test_generator = val_test_datagen.flow_from_directory(
         config.TEST_DIR,
+        classes=chilli_test_dirs,
         target_size=config.INPUT_SHAPE[:2],
         batch_size=config.BATCH_SIZE,
         class_mode='categorical',
         shuffle=False,
         seed=42
     )
-    
-    # Get class names from generator
+
+    # Class info comes directly from the generator (already chilli-only)
     class_indices = train_generator.class_indices
-    class_names = list(class_indices.keys())
-    num_classes = len(class_names)
+    class_names   = sorted(class_indices.keys())
+    num_classes   = len(class_names)
     
     print(f"\n{'='*60}")
     print("Dataset Statistics:")
@@ -239,6 +266,7 @@ def create_data_generators(config):
     print(f"  - Number of classes: {num_classes}")
     print(f"  - Batch size: {config.BATCH_SIZE}")
     print(f"  - Steps per epoch (train): {len(train_generator)}")
+    print(f"  - Using combined dataset (chilli classes only)")
     print(f"\nClass distribution:")
     for class_name, idx in sorted(class_indices.items(), key=lambda x: x[1]):
         print(f"    {idx}: {class_name}")
@@ -255,6 +283,35 @@ def create_data_generators(config):
         }, f, indent=2)
     print(f"\n✓ Class labels saved to: {labels_path}")
     
+    # ── Keras 3 / empty-dataset guard ──────────────────────────────────────
+    def _check_samples(gen, split_name, split_dir):
+        if gen.samples == 0:
+            print(f"\n❌ ERROR: No images found in {split_name} directory: {split_dir}")
+            print(f"   Supported extensions: .jpg .jpeg .png .bmp .ppm .tiff")
+            print(f"   Scanning directory for any files...")
+            found = []
+            for root, dirs, files in os.walk(split_dir):
+                for f in files[:5]:  # show first 5 per dir
+                    found.append(os.path.join(root, f))
+                    if len(found) >= 20:
+                        break
+                if len(found) >= 20:
+                    break
+            if found:
+                print(f"   Files found (sample):")
+                for fp in found:
+                    print(f"     {fp}")
+            else:
+                print(f"   No files found at all — directory may be empty or path is wrong.")
+            raise FileNotFoundError(
+                f"No images loaded for '{split_name}' split from: {split_dir}\n"
+                f"Check that images with supported extensions exist inside class subdirectories."
+            )
+
+    _check_samples(train_generator, 'train', config.TRAIN_DIR)
+    _check_samples(val_generator,   'val',   config.VAL_DIR)
+    # ── End guard ──────────────────────────────────────────────────────────
+    
     return train_generator, val_generator, test_generator, class_names, num_classes
 
 
@@ -266,6 +323,10 @@ def visualize_augmentations(train_generator, config, num_samples=8):
     # Get one batch
     images, labels = next(train_generator)
     
+    if len(images) == 0:
+        print("⚠ Warning: Empty batch returned by generator. Skipping augmentation visualization.")
+        return
+    
     # Get class names
     idx_to_class = {v: k for k, v in train_generator.class_indices.items()}
     
@@ -273,6 +334,7 @@ def visualize_augmentations(train_generator, config, num_samples=8):
     cols = 4
     fig, axes = plt.subplots(rows, cols, figsize=(16, 8))
     
+    num_samples = min(num_samples, len(images))
     for i in range(min(num_samples, rows * cols)):
         row = i // cols
         col = i % cols
@@ -518,6 +580,32 @@ def compile_model(model, learning_rate, config):
     return model
 
 
+def _generator_to_tf_dataset(generator):
+    """
+    Convert a legacy Keras ImageDataGenerator flow to a tf.data.Dataset.
+    Required for Keras 3 compatibility — the new PyDatasetAdapter rejects
+    generators whose __len__ returns 0 even when steps_per_epoch is supplied.
+    """
+    import tensorflow as tf
+    input_shape = generator.image_shape   # (H, W, C)
+    num_classes = generator.num_classes
+
+    def _gen():
+        for x_batch, y_batch in generator:
+            yield x_batch, y_batch
+
+    dataset = tf.data.Dataset.from_generator(
+        _gen,
+        output_signature=(
+            tf.TensorSpec(shape=(None, *input_shape), dtype=tf.float32),
+            tf.TensorSpec(shape=(None, num_classes),  dtype=tf.float32),
+        )
+    )
+    # Generator already batches; flatten + rebatch cleanly, then prefetch
+    dataset = dataset.unbatch().batch(generator.batch_size).prefetch(tf.data.AUTOTUNE)
+    return dataset
+
+
 def train_model(model, train_gen, val_gen, config, phase='initial', epochs=None):
     """
     Train the model.
@@ -539,11 +627,17 @@ def train_model(model, train_gen, val_gen, config, phase='initial', epochs=None)
     print(f"{'='*70}")
     
     callbacks = get_callbacks(config, phase)
-    
+
+    # Convert legacy generators → tf.data.Dataset for Keras 3 compatibility
+    train_dataset = _generator_to_tf_dataset(train_gen)
+    val_dataset   = _generator_to_tf_dataset(val_gen)
+
     history = model.fit(
-        train_gen,
-        validation_data=val_gen,
+        train_dataset,
+        validation_data=val_dataset,
         epochs=epochs,
+        steps_per_epoch=len(train_gen),
+        validation_steps=len(val_gen),
         callbacks=callbacks,
         verbose=1
     )

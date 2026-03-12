@@ -1,25 +1,108 @@
 {
+  "model": "AgriLite-Hybrid",
+  "num_classes": 26,
+  "class_names": [
+    "brinjal_Augmented_Healthy_Leaf",
+    "brinjal_Augmented_Insect_Pest_Disease",
+    "brinjal_Augmented_Leaf_Spot_Disease",
+    "brinjal_Augmented_Mosaic_Virus_Disease",
+    "brinjal_Augmented_Small_Leaf_Disease",
+    "brinjal_Augmented_White_Mold_Disease",
+    "brinjal_Augmented_Wilt_Disease",
+    "chilli_Chilli_Anthracnos",
+    "chilli_Chilli_Damping_Off",
+    "chilli_Chilli_Leaf_Curl_Virus",
+    "chilli_Chilli_Leaf_Spot",
+    "chilli_Chilli_Veinal_Mottle_Virus",
+    "chilli_Chilli__Whitefly",
+    "chilli_Chilli__Yellowish",
+    "chilli_Chilli__healthy",
+    "tomato_Bacterial_spot",
+    "tomato_Early_blight",
+    "tomato_Late_blight",
+    "tomato_Leaf_Mold",
+    "tomato_Septoria_leaf_spot",
+    "tomato_Spider_mites_Two_spotted_spider_mite",
+    "tomato_Target_Spot",
+    "tomato_Tomato_Yellow_Leaf_Curl_Virus",
+    "tomato_Tomato_mosaic_virus",
+    "tomato_healthy",
+    "tomato_powdery_mildew"
+  ],
+  "class_indices": {
+    "brinjal_Augmented_Healthy_Leaf": 0,
+    "brinjal_Augmented_Insect_Pest_Disease": 1,
+    "brinjal_Augmented_Leaf_Spot_Disease": 2,
+    "brinjal_Augmented_Mosaic_Virus_Disease": 3,
+    "brinjal_Augmented_Small_Leaf_Disease": 4,
+    "brinjal_Augmented_White_Mold_Disease": 5,
+    "brinjal_Augmented_Wilt_Disease": 6,
+    "chilli_Chilli_Anthracnos": 7,
+    "chilli_Chilli_Damping_Off": 8,
+    "chilli_Chilli_Leaf_Curl_Virus": 9,
+    "chilli_Chilli_Leaf_Spot": 10,
+    "chilli_Chilli_Veinal_Mottle_Virus": 11,
+    "chilli_Chilli__Whitefly": 12,
+    "chilli_Chilli__Yellowish": 13,
+    "chilli_Chilli__healthy": 14,
+    "tomato_Bacterial_spot": 15,
+    "tomato_Early_blight": 16,
+    "tomato_Late_blight": 17,
+    "tomato_Leaf_Mold": 18,
+    "tomato_Septoria_leaf_spot": 19,
+    "tomato_Spider_mites_Two_spotted_spider_mite": 20,
+    "tomato_Target_Spot": 21,
+    "tomato_Tomato_Yellow_Leaf_Curl_Virus": 22,
+    "tomato_Tomato_mosaic_virus": 23,
+    "tomato_healthy": 24,
+    "tomato_powdery_mildew": 25
+  },
+  "class_to_display": {
+    "brinjal_Augmented_Healthy_Leaf": "Healthy",
+    "brinjal_Augmented_Insect_Pest_Disease": "Insect Pest Disease",
+    "brinjal_Augmented_Leaf_Spot_Disease": "Leaf Spot Disease",
+    "brinjal_Augmented_Mosaic_Virus_Disease": "Mosaic Virus Disease",
+    "brinjal_Augmented_Small_Leaf_Disease": "Small Leaf Disease",
+    "brinjal_Augmented_White_Mold_Disease": "White Mold Disease",
+    "brinjal_Augmented_Wilt_Disease": "Wilt Disease",
+    "chilli_Chilli_Anthracnos": "Anthracnose",
+    "chilli_Chilli_Damping_Off": "Damping Off",
+    "chilli_Chilli_Leaf_Curl_Virus": "Leaf Curl Virus",
+    "chilli_Chilli_Leaf_Spot": "Leaf Spot",
+    "chilli_Chilli_Veinal_Mottle_Virus": "Veinal Mottle Virus",
+    "chilli_Chilli__Whitefly": "Whitefly",
+    "chilli_Chilli__Yellowish": "Yellowish",
+    "chilli_Chilli__healthy": "Healthy",
+    "tomato_Bacterial_spot": "Bacterial Spot",
+    "tomato_Early_blight": "Early Blight",
+    "tomato_Late_blight": "Late Blight",
+    "tomato_Leaf_Mold": "Leaf Mold",
+    "tomato_Septoria_leaf_spot": "Septoria Leaf Spot",
+    "tomato_Spider_mites_Two_spotted_spider_mite": "Spider Mites (Two-spotted)",
+    "tomato_Target_Spot": "Target Spot",
+    "tomato_Tomato_Yellow_Leaf_Curl_Virus": "Yellow Leaf Curl Virus",
+    "tomato_Tomato_mosaic_virus": "Mosaic Virus",
+    "tomato_healthy": "Healthy",
+    "tomato_powdery_mildew": "Powdery Mildew"
+  },
+  "crop_class_ranges": {
+    "brinjal": [0, 6],
+    "chilli": [7, 14],
+    "tomato": [15, 25]
+  },
   "crops": {
     "brinjal": {
       "name": "Brinjal (Eggplant)",
       "image": "/images/crops/brinjal.jpg",
-      "description": "Common vegetable crop susceptible to leaf spot and blight diseases",
+      "description": "Common vegetable crop susceptible to various fungal and viral diseases",
       "diseases": [
-        "Cercospora Leaf Spot",
-        "Little Leaf Disease",
-        "Phomopsis Blight",
-        "Healthy"
-      ]
-    },
-    "okra": {
-      "name": "Okra (Ladies Finger)",
-      "image": "/images/crops/okra.jpg",
-      "description": "Popular vegetable vulnerable to viral and fungal infections",
-      "diseases": [
-        "Yellow Vein Mosaic",
-        "Powdery Mildew",
-        "Leaf Curl Disease",
-        "Healthy"
+        "Healthy",
+        "Insect Pest Disease",
+        "Leaf Spot Disease",
+        "Mosaic Virus Disease",
+        "Small Leaf Disease",
+        "White Mold Disease",
+        "Wilt Disease"
       ]
     },
     "tomato": {
@@ -27,11 +110,17 @@
       "image": "/images/crops/tomato.jpg",
       "description": "Widely cultivated crop affected by various bacterial and fungal diseases",
       "diseases": [
+        "Bacterial Spot",
         "Early Blight",
         "Late Blight",
-        "Bacterial Spot",
+        "Leaf Mold",
         "Septoria Leaf Spot",
-        "Healthy"
+        "Spider Mites (Two-spotted)",
+        "Target Spot",
+        "Yellow Leaf Curl Virus",
+        "Mosaic Virus",
+        "Healthy",
+        "Powdery Mildew"
       ]
     },
     "chilli": {
@@ -39,10 +128,13 @@
       "image": "/images/crops/chilli.jpg",
       "description": "Spice crop prone to viral infections and fungal diseases",
       "diseases": [
-        "Leaf Curl Virus",
-        "Powdery Mildew",
         "Anthracnose",
-        "Bacterial Leaf Spot",
+        "Damping Off",
+        "Leaf Curl Virus",
+        "Leaf Spot",
+        "Veinal Mottle Virus",
+        "Whitefly",
+        "Yellowish",
         "Healthy"
       ]
     }
@@ -53,7 +145,43 @@
     "severe"
   ],
   "treatments": {
-    "Cercospora Leaf Spot": {
+    "Healthy": {
+      "mild": [
+        "Continue regular maintenance practices",
+        "Monitor for early signs of disease",
+        "Maintain balanced fertilization"
+      ],
+      "medium": [
+        "Plants appear healthy - continue monitoring",
+        "Apply preventive fungicide if disease pressure is high",
+        "Ensure proper irrigation practices"
+      ],
+      "severe": [
+        "Plants appear healthy",
+        "Continue excellent management practices",
+        "Consider preventive measures during high-risk periods"
+      ]
+    },
+    "Insect Pest Disease": {
+      "mild": [
+        "Monitor for insect activity regularly",
+        "Apply neem oil spray as a preventive measure",
+        "Use yellow sticky traps to detect pests early"
+      ],
+      "medium": [
+        "Apply organic insecticide (pyrethrin-based)",
+        "Remove heavily damaged leaves",
+        "Introduce beneficial insects like ladybugs",
+        "Check undersides of leaves for eggs and larvae"
+      ],
+      "severe": [
+        "Apply systemic insecticide (imidacloprid)",
+        "Remove and destroy severely infested plant parts",
+        "Consider biological control agents",
+        "Rotate insecticides to prevent resistance"
+      ]
+    },
+    "Leaf Spot Disease": {
       "mild": [
         "Remove affected leaves and dispose properly",
         "Apply neem oil spray once a week",
@@ -72,7 +200,26 @@
         "Rotate crops next season"
       ]
     },
-    "Little Leaf Disease": {
+    "Mosaic Virus Disease": {
+      "mild": [
+        "Remove and destroy infected leaves",
+        "Control aphid vectors with neem spray",
+        "Disinfect tools after each use"
+      ],
+      "medium": [
+        "Remove infected plants to prevent spread",
+        "Apply systemic insecticide for aphid control",
+        "Use reflective mulch to repel vectors",
+        "Avoid touching healthy plants after handling infected ones"
+      ],
+      "severe": [
+        "Remove and burn all infected plants",
+        "Intensive aphid and whitefly control program",
+        "Plant virus-resistant varieties",
+        "Sanitize entire growing area"
+      ]
+    },
+    "Small Leaf Disease": {
       "mild": [
         "Monitor plant growth closely",
         "Apply balanced fertilizer to boost immunity",
@@ -91,80 +238,194 @@
         "Avoid planting during peak vector season"
       ]
     },
-    "Phomopsis Blight": {
+    "White Mold Disease": {
       "mild": [
-        "Prune affected plant parts",
-        "Apply copper hydroxide spray",
-        "Improve drainage around plants"
+        "Improve air circulation around plants",
+        "Reduce humidity by adjusting irrigation",
+        "Remove affected plant debris"
       ],
       "medium": [
-        "Remove infected fruits and leaves",
-        "Apply mancozeb or carbendazim fungicide",
-        "Stake plants to improve air flow",
-        "Avoid working with wet plants"
+        "Apply fungicide (iprodione or vinclozolin)",
+        "Remove infected plant parts and destroy",
+        "Increase plant spacing",
+        "Avoid excessive nitrogen fertilization"
       ],
       "severe": [
         "Remove entire infected plants",
-        "Apply systemic fungicide to remaining plants",
+        "Apply soil drench fungicide",
         "Solarize soil before next planting",
-        "Use certified disease-free seeds"
+        "Rotate with non-host crops for 3+ years"
       ]
     },
-    "Yellow Vein Mosaic": {
+    "Wilt Disease": {
       "mild": [
-        "Control whitefly population with yellow sticky traps",
-        "Apply neem oil weekly",
-        "Remove weeds that harbor vectors"
+        "Ensure proper drainage in growing area",
+        "Apply beneficial microorganisms (Trichoderma)",
+        "Maintain balanced soil pH (6.0-7.0)"
       ],
       "medium": [
-        "Remove mildly infected plants",
-        "Spray imidacloprid or thiamethoxam for whiteflies",
-        "Use reflective mulch to repel vectors",
-        "Intercrop with repellent plants"
+        "Remove wilting plants immediately",
+        "Apply systemic fungicide (carbendazim)",
+        "Solarize the soil for 4-6 weeks",
+        "Add organic matter to improve soil health"
+      ],
+      "severe": [
+        "Remove and destroy all infected plants",
+        "Treat soil with fumigant or bio-agent",
+        "Plant resistant rootstock varieties",
+        "Implement crop rotation with non-solanaceous crops"
+      ]
+    },
+    "Anthracnose": {
+      "mild": [
+        "Remove infected fruits",
+        "Apply copper fungicide",
+        "Improve air circulation"
+      ],
+      "medium": [
+        "Apply mancozeb or captan fungicide",
+        "Remove all symptomatic plant parts",
+        "Harvest fruits before full ripeness",
+        "Avoid bruising fruits during harvest"
+      ],
+      "severe": [
+        "Apply systemic fungicide (azoxystrobin)",
+        "Remove entire infected plants",
+        "Hot water treatment for seeds (52°C, 30 min)",
+        "Use disease-free seeds next season"
+      ]
+    },
+    "Damping Off": {
+      "mild": [
+        "Reduce watering frequency",
+        "Improve soil drainage",
+        "Apply Trichoderma-based bio-fungicide"
+      ],
+      "medium": [
+        "Apply metalaxyl or mefenoxam drench",
+        "Thin out overcrowded seedlings",
+        "Use sterilized growing media",
+        "Ensure adequate air circulation"
+      ],
+      "severe": [
+        "Remove all affected seedlings and soil",
+        "Apply chemical fungicide drench (captan)",
+        "Start fresh with treated seeds and sterile media",
+        "Avoid overwatering and overcrowding"
+      ]
+    },
+    "Leaf Curl Virus": {
+      "mild": [
+        "Control whitefly with yellow sticky traps",
+        "Apply horticultural oil spray",
+        "Remove alternate weed hosts"
+      ],
+      "medium": [
+        "Remove infected plants",
+        "Intensive whitefly management",
+        "Apply systemic insecticide",
+        "Use reflective mulch"
       ],
       "severe": [
         "Remove all infected plants immediately",
-        "Intensive whitefly control program",
-        "Plant resistant varieties only",
-        "Install insect-proof nets for nursery"
+        "Treat field-wide for vectors",
+        "Plant only resistant varieties",
+        "Install shade net for vector exclusion"
       ]
     },
-    "Powdery Mildew": {
+    "Leaf Spot": {
       "mild": [
-        "Spray milk solution (1:9 with water)",
-        "Apply sulfur dust in early morning",
-        "Increase plant spacing"
+        "Remove spotted leaves carefully",
+        "Apply organic copper fungicide",
+        "Ensure plants have adequate spacing"
       ],
       "medium": [
-        "Apply potassium bicarbonate spray",
-        "Use sulfur-based fungicides",
-        "Remove lower leaves for better airflow",
-        "Water at soil level only"
+        "Apply chlorothalonil or mancozeb fungicide",
+        "Remove all heavily spotted leaves",
+        "Avoid overhead irrigation",
+        "Apply mulch to reduce soil splash"
       ],
       "severe": [
-        "Apply systemic fungicide (myclobutanil)",
-        "Remove heavily infected plant parts",
-        "Reduce nitrogen fertilization",
-        "Consider organic fungicides like neem"
+        "Apply systemic fungicide program",
+        "Remove and destroy severely affected plants",
+        "Rotate with non-host crops",
+        "Source disease-free seeds"
       ]
     },
-    "Leaf Curl Disease": {
+    "Veinal Mottle Virus": {
       "mild": [
-        "Control thrips with blue sticky traps",
-        "Apply neem-based insecticide",
-        "Maintain adequate soil moisture"
+        "Monitor for aphid vectors",
+        "Apply neem oil as preventive spray",
+        "Remove weeds that may harbor the virus"
       ],
       "medium": [
-        "Remove affected leaves carefully",
-        "Spray spinosad for thrips control",
+        "Remove and destroy infected plants",
+        "Apply systemic insecticide for aphid control",
+        "Use reflective mulch to deter aphids",
+        "Avoid planting near infected fields"
+      ],
+      "severe": [
+        "Remove all infected plants and burn",
+        "Intensive vector control across the field",
+        "Plant only certified virus-free seedlings",
+        "Implement a field-wide aphid management program"
+      ]
+    },
+    "Whitefly": {
+      "mild": [
+        "Install yellow sticky traps around plants",
+        "Apply neem oil spray weekly",
+        "Encourage natural predators (lacewings, ladybugs)"
+      ],
+      "medium": [
+        "Apply insecticidal soap spray",
+        "Use reflective aluminum mulch",
+        "Spray imidacloprid systemically",
+        "Remove heavily infested lower leaves"
+      ],
+      "severe": [
+        "Apply systemic neonicotinoid insecticide",
+        "Consider biological control (Encarsia formosa)",
+        "Install fine-mesh insect netting",
+        "Rotate insecticide classes to prevent resistance"
+      ]
+    },
+    "Yellowish": {
+      "mild": [
+        "Check for nutrient deficiencies (nitrogen, iron)",
         "Apply balanced fertilizer",
-        "Mulch to maintain soil temperature"
+        "Ensure adequate watering"
+      ],
+      "medium": [
+        "Apply foliar micronutrient spray (iron, magnesium)",
+        "Test soil pH and adjust if needed",
+        "Check for root damage or waterlogging",
+        "Remove severely yellowed leaves"
       ],
       "severe": [
-        "Remove entire infected plants",
-        "Intensive thrips management",
-        "Use virus-free planting material",
-        "Avoid successive planting"
+        "Conduct comprehensive soil testing",
+        "Apply chelated iron and micronutrient supplement",
+        "Check for viral infection as secondary cause",
+        "Consider replanting with healthy stock"
+      ]
+    },
+    "Bacterial Spot": {
+      "mild": [
+        "Apply copper hydroxide spray",
+        "Remove affected leaves",
+        "Avoid working with wet plants"
+      ],
+      "medium": [
+        "Apply copper + mancozeb combination",
+        "Remove heavily spotted fruits",
+        "Disinfect pruning tools with bleach",
+        "Reduce nitrogen fertilizer"
+      ],
+      "severe": [
+        "Remove and destroy infected plants",
+        "Apply copper at maximum label rate",
+        "Use only certified disease-free seeds",
+        "Clean greenhouse thoroughly if applicable"
       ]
     },
     "Early Blight": {
@@ -205,23 +466,23 @@
         "Do not compost infected material - burn it"
       ]
     },
-    "Bacterial Spot": {
+    "Leaf Mold": {
       "mild": [
-        "Apply copper hydroxide spray",
-        "Remove affected leaves",
-        "Avoid working with wet plants"
+        "Improve greenhouse ventilation",
+        "Reduce humidity below 85%",
+        "Remove lower infected leaves"
       ],
       "medium": [
-        "Apply copper + mancozeb combination",
-        "Remove heavily spotted fruits",
-        "Disinfect pruning tools with bleach",
-        "Reduce nitrogen fertilizer"
+        "Apply chlorothalonil fungicide",
+        "Increase plant spacing for airflow",
+        "Prune canopy to reduce humidity",
+        "Water in morning to reduce leaf wetness"
       ],
       "severe": [
-        "Remove and destroy infected plants",
-        "Apply copper at maximum label rate",
-        "Use only certified disease-free seeds",
-        "Clean greenhouse thoroughly if applicable"
+        "Apply systemic fungicide program",
+        "Remove and destroy heavily infected plants",
+        "Sanitize greenhouse structure",
+        "Plant resistant cultivars next season"
       ]
     },
     "Septoria Leaf Spot": {
@@ -243,7 +504,45 @@
         "Consider fumigation before next season"
       ]
     },
-    "Leaf Curl Virus": {
+    "Spider Mites (Two-spotted)": {
+      "mild": [
+        "Spray plants with strong water jet to dislodge mites",
+        "Apply neem oil weekly",
+        "Increase humidity around plants"
+      ],
+      "medium": [
+        "Apply miticide (abamectin or spiromesifen)",
+        "Release predatory mites (Phytoseiulus persimilis)",
+        "Remove heavily infested leaves",
+        "Spray insecticidal soap on undersides of leaves"
+      ],
+      "severe": [
+        "Apply systemic miticide program",
+        "Alternate miticide classes to prevent resistance",
+        "Remove entire heavily infested plants",
+        "Clean area thoroughly before replanting"
+      ]
+    },
+    "Target Spot": {
+      "mild": [
+        "Remove lower leaves showing symptoms",
+        "Apply copper-based fungicide",
+        "Improve air circulation"
+      ],
+      "medium": [
+        "Apply chlorothalonil or azoxystrobin",
+        "Remove all symptomatic leaves",
+        "Stake plants for better airflow",
+        "Avoid overhead irrigation"
+      ],
+      "severe": [
+        "Apply systemic fungicide (difenoconazole)",
+        "Remove heavily infected plants",
+        "Practice crop rotation for 2-3 years",
+        "Use pathogen-free transplants"
+      ]
+    },
+    "Yellow Leaf Curl Virus": {
       "mild": [
         "Control whitefly with yellow sticky traps",
         "Apply horticultural oil spray",
@@ -251,70 +550,53 @@
       ],
       "medium": [
         "Remove infected plants",
-        "Intensive whitefly management",
+        "Intensive whitefly management with imidacloprid",
         "Apply systemic insecticide",
         "Use reflective mulch"
       ],
       "severe": [
         "Remove all infected plants immediately",
-        "Treat field-wide for vectors",
-        "Plant only resistant varieties",
-        "Install shade net for vector exclusion"
+        "Treat entire field for whitefly vectors",
+        "Plant only resistant varieties (Ty gene)",
+        "Install insect-proof nets for nursery"
       ]
     },
-    "Anthracnose": {
+    "Mosaic Virus": {
       "mild": [
-        "Remove infected fruits",
-        "Apply copper fungicide",
-        "Improve air circulation"
+        "Remove and destroy infected leaves",
+        "Control aphid vectors with neem oil",
+        "Disinfect tools with 10% bleach solution"
       ],
       "medium": [
-        "Apply mancozeb or captan fungicide",
-        "Remove all symptomatic plant parts",
-        "Harvest fruits before full ripeness",
-        "Avoid bruising fruits during harvest"
-      ],
-      "severe": [
-        "Apply systemic fungicide (azoxystrobin)",
         "Remove entire infected plants",
-        "Hot water treatment for seeds (52°C, 30 min)",
-        "Use disease-free seeds next season"
-      ]
-    },
-    "Bacterial Leaf Spot": {
-      "mild": [
-        "Apply copper bactericide",
-        "Remove spotted leaves",
-        "Water at base only"
-      ],
-      "medium": [
-        "Apply streptomycin if permitted",
-        "Remove heavily infected plants",
-        "Sanitize all tools",
-        "Avoid overhead irrigation"
+        "Apply systemic insecticide for vector control",
+        "Avoid touching healthy plants without washing hands",
+        "Use reflective mulch to deter aphids"
       ],
       "severe": [
-        "Remove entire infected plants",
-        "Apply maximum rate copper treatment",
-        "Source certified disease-free seeds",
-        "Rotate away from peppers for 2 years"
+        "Remove and burn all infected plants",
+        "Intensive aphid control program",
+        "Plant only virus-resistant varieties",
+        "Sanitize all equipment and growing areas"
       ]
     },
-    "Healthy": {
+    "Powdery Mildew": {
       "mild": [
-        "Continue regular maintenance practices",
-        "Monitor for early signs of disease",
-        "Maintain balanced fertilization"
+        "Spray milk solution (1:9 with water)",
+        "Apply sulfur dust in early morning",
+        "Increase plant spacing"
       ],
       "medium": [
-        "Plants appear healthy - continue monitoring",
-        "Apply preventive fungicide if disease pressure is high",
-        "Ensure proper irrigation practices"
+        "Apply potassium bicarbonate spray",
+        "Use sulfur-based fungicides",
+        "Remove lower leaves for better airflow",
+        "Water at soil level only"
       ],
       "severe": [
-        "Plants appear healthy",
-        "Continue excellent management practices",
-        "Consider preventive measures during high-risk periods"
+        "Apply systemic fungicide (myclobutanil)",
+        "Remove heavily infected plant parts",
+        "Reduce nitrogen fertilization",
+        "Consider organic fungicides like neem"
       ]
     }
   }

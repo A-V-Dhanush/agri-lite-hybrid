@@ -69,10 +69,6 @@ const Footer: React.FC = () => {
                 <span>Brinjal (Eggplant)</span>
               </li>
               <li className="flex items-center space-x-2">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                <span>Okra (Lady Finger)</span>
-              </li>
-              <li className="flex items-center space-x-2">
                 <span className="w-2 h-2 bg-red-500 rounded-full"></span>
                 <span>Tomato</span>
               </li>

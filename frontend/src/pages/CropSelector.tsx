@@ -24,14 +24,12 @@ interface CropCardProps {
 const CropCard: React.FC<CropCardProps> = ({ crop, isSelected, onSelect }) => {
   const colorMap: Record<string, string> = {
     brinjal: 'from-purple-400 to-purple-600',
-    okra: 'from-green-400 to-green-600',
     tomato: 'from-red-400 to-red-600',
     chilli: 'from-orange-400 to-orange-600',
   };
 
   const emojiMap: Record<string, string> = {
     brinjal: '🍆',
-    okra: '🥒',
     tomato: '🍅',
     chilli: '🌶️',
   };
@@ -96,33 +94,25 @@ const CropSelector: React.FC = () => {
             {
               name: 'brinjal',
               display_name: 'Brinjal (Eggplant)',
-              description: 'Detect diseases like Cercospora, Little Leaf, Mosaic Virus, and more.',
+              description: 'Detect diseases like Leaf Spot, Mosaic Virus, Wilt, and more.',
               image: '/images/crops/brinjal.jpg',
-              diseases: ['Cercospora Leaf Spot', 'Little Leaf Disease', 'Phomopsis Blight', 'Healthy'],
+              diseases: ['Healthy', 'Insect Pest Disease', 'Leaf Spot Disease', 'Mosaic Virus Disease', 'Small Leaf Disease', 'White Mold Disease', 'Wilt Disease'],
               color: '#8B5CF6',
-            },
-            {
-              name: 'okra',
-              display_name: 'Okra (Ladies Finger)',
-              description: 'Detect Yellow Vein Mosaic, Powdery Mildew, Leaf Curl, and more.',
-              image: '/images/crops/okra.jpg',
-              diseases: ['Yellow Vein Mosaic', 'Powdery Mildew', 'Leaf Curl Disease', 'Healthy'],
-              color: '#22C55E',
             },
             {
               name: 'tomato',
               display_name: 'Tomato',
               description: 'Detect Early Blight, Late Blight, Leaf Mold, Septoria, and more.',
               image: '/images/crops/tomato.jpg',
-              diseases: ['Early Blight', 'Late Blight', 'Bacterial Spot', 'Septoria Leaf Spot', 'Healthy'],
+              diseases: ['Bacterial Spot', 'Early Blight', 'Late Blight', 'Leaf Mold', 'Septoria Leaf Spot', 'Spider Mites (Two-spotted)', 'Target Spot', 'Yellow Leaf Curl Virus', 'Mosaic Virus', 'Healthy', 'Powdery Mildew'],
               color: '#EF4444',
             },
             {
               name: 'chilli',
               display_name: 'Chilli',
-              description: 'Detect Anthracnose, Bacterial Spot, Leaf Curl, Mosaic Virus, and more.',
+              description: 'Detect Anthracnose, Leaf Curl, Damping Off, Whitefly, and more.',
               image: '/images/crops/chilli.jpg',
-              diseases: ['Leaf Curl Virus', 'Powdery Mildew', 'Anthracnose', 'Bacterial Leaf Spot', 'Healthy'],
+              diseases: ['Anthracnose', 'Damping Off', 'Leaf Curl Virus', 'Leaf Spot', 'Veinal Mottle Virus', 'Whitefly', 'Yellowish', 'Healthy'],
               color: '#F97316',
             },
           ]);
@@ -135,33 +125,25 @@ const CropSelector: React.FC = () => {
           {
             name: 'brinjal',
             display_name: 'Brinjal (Eggplant)',
-            description: 'Detect diseases like Cercospora, Little Leaf, Mosaic Virus, and more.',
+            description: 'Detect diseases like Leaf Spot, Mosaic Virus, Wilt, and more.',
             image: '/images/crops/brinjal.jpg',
-            diseases: ['Cercospora Leaf Spot', 'Little Leaf Disease', 'Phomopsis Blight', 'Healthy'],
+            diseases: ['Healthy', 'Insect Pest Disease', 'Leaf Spot Disease', 'Mosaic Virus Disease', 'Small Leaf Disease', 'White Mold Disease', 'Wilt Disease'],
             color: '#8B5CF6',
-          },
-          {
-            name: 'okra',
-            display_name: 'Okra (Ladies Finger)',
-            description: 'Detect Yellow Vein Mosaic, Powdery Mildew, Leaf Curl, and more.',
-            image: '/images/crops/okra.jpg',
-            diseases: ['Yellow Vein Mosaic', 'Powdery Mildew', 'Leaf Curl Disease', 'Healthy'],
-            color: '#22C55E',
           },
           {
             name: 'tomato',
             display_name: 'Tomato',
             description: 'Detect Early Blight, Late Blight, Leaf Mold, Septoria, and more.',
             image: '/images/crops/tomato.jpg',
-            diseases: ['Early Blight', 'Late Blight', 'Bacterial Spot', 'Septoria Leaf Spot', 'Healthy'],
+            diseases: ['Bacterial Spot', 'Early Blight', 'Late Blight', 'Leaf Mold', 'Septoria Leaf Spot', 'Spider Mites (Two-spotted)', 'Target Spot', 'Yellow Leaf Curl Virus', 'Mosaic Virus', 'Healthy', 'Powdery Mildew'],
             color: '#EF4444',
           },
           {
             name: 'chilli',
             display_name: 'Chilli',
-            description: 'Detect Anthracnose, Bacterial Spot, Leaf Curl, Mosaic Virus, and more.',
+            description: 'Detect Anthracnose, Leaf Curl, Damping Off, Whitefly, and more.',
             image: '/images/crops/chilli.jpg',
-            diseases: ['Leaf Curl Virus', 'Powdery Mildew', 'Anthracnose', 'Bacterial Leaf Spot', 'Healthy'],
+            diseases: ['Anthracnose', 'Damping Off', 'Leaf Curl Virus', 'Leaf Spot', 'Veinal Mottle Virus', 'Whitefly', 'Yellowish', 'Healthy'],
             color: '#F97316',
           },
         ]);

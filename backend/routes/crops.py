@@ -26,28 +26,18 @@ DEFAULT_CROPS = {
     'brinjal': {
         'name': 'brinjal',
         'display_name': 'Brinjal (Eggplant)',
-        'description': 'Common vegetable crop susceptible to various leaf spot and blight diseases. Early detection helps prevent yield loss.',
+        'description': 'Common vegetable crop susceptible to various fungal and viral diseases. Early detection helps prevent yield loss.',
         'image': '/images/crops/brinjal.jpg',
         'diseases': [
-            'Cercospora Leaf Spot',
-            'Little Leaf Disease', 
-            'Phomopsis Blight',
-            'Healthy'
+            'Healthy',
+            'Insect Pest Disease',
+            'Leaf Spot Disease',
+            'Mosaic Virus Disease',
+            'Small Leaf Disease',
+            'White Mold Disease',
+            'Wilt Disease'
         ],
         'color': '#8B5CF6'  # Purple
-    },
-    'okra': {
-        'name': 'okra',
-        'display_name': 'Okra (Ladies Finger)',
-        'description': 'Popular vegetable vulnerable to viral infections and fungal diseases. Regular monitoring is essential.',
-        'image': '/images/crops/okra.jpg',
-        'diseases': [
-            'Yellow Vein Mosaic',
-            'Powdery Mildew',
-            'Leaf Curl Disease',
-            'Healthy'
-        ],
-        'color': '#22C55E'  # Green
     },
     'tomato': {
         'name': 'tomato',
@@ -55,11 +45,17 @@ DEFAULT_CROPS = {
         'description': 'Widely cultivated crop affected by various bacterial and fungal diseases. Proper diagnosis improves treatment success.',
         'image': '/images/crops/tomato.jpg',
         'diseases': [
+            'Bacterial Spot',
             'Early Blight',
             'Late Blight',
-            'Bacterial Spot',
+            'Leaf Mold',
             'Septoria Leaf Spot',
-            'Healthy'
+            'Spider Mites (Two-spotted)',
+            'Target Spot',
+            'Yellow Leaf Curl Virus',
+            'Mosaic Virus',
+            'Healthy',
+            'Powdery Mildew'
         ],
         'color': '#EF4444'  # Red
     },
@@ -69,10 +65,13 @@ DEFAULT_CROPS = {
         'description': 'Spice crop prone to viral infections and fungal diseases. Quick identification prevents spread.',
         'image': '/images/crops/chilli.jpg',
         'diseases': [
-            'Leaf Curl Virus',
-            'Powdery Mildew',
             'Anthracnose',
-            'Bacterial Leaf Spot',
+            'Damping Off',
+            'Leaf Curl Virus',
+            'Leaf Spot',
+            'Veinal Mottle Virus',
+            'Whitefly',
+            'Yellowish',
             'Healthy'
         ],
         'color': '#F97316'  # Orange

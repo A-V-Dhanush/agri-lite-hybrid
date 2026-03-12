@@ -83,16 +83,14 @@ PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 class Config:
     """Training configuration parameters"""
     
-    # Dataset paths - RELATIVE from project root (works on Windows & Linux)
-    # Update these paths to match your dataset location
-    DATA_DIR = os.path.join(PROJECT_ROOT, "DataSets", "eggplant", 
-                            "Eggplant Disease Recognition Dataset", 
-                            "Augmented Images (Version 02)", 
-                            "Augmented Images (Version 02)")
-    
-    # Alternative: Use combined dataset
-    # DATA_DIR = os.path.join(PROJECT_ROOT, "DataSets", "combined", "train")
-    # Look for brinjal_* classes only
+    # Dataset paths - use combined dataset with brinjal-prefixed classes
+    DATA_DIR  = os.path.join(PROJECT_ROOT, "DataSets", "combined")
+    TRAIN_DIR = os.path.join(DATA_DIR, "train")
+    VAL_DIR   = os.path.join(DATA_DIR, "val")
+    TEST_DIR  = os.path.join(DATA_DIR, "test")
+
+    # Filter: only load brinjal classes (starts with "brinjal_")
+    CROP_FILTER = "brinjal_"
     
     # Model parameters
     MODEL_NAME = "brinjal_efficientnetv2b0_cbam"
@@ -146,14 +144,7 @@ class Config:
 def create_data_generators(config):
     """
     Create data generators with augmentation for training.
-    
-    Augmentation strategy:
-    - Rotation: ±30°
-    - Horizontal/Vertical flip
-    - Brightness: ±20%
-    - Zoom: 0.8-1.2
-    - Shear: ±10°
-    - Width/Height shift: ±20%
+    Loads ONLY brinjal classes from the combined dataset.
     """
     
     # Training data generator with augmentation
@@ -167,63 +158,102 @@ def create_data_generators(config):
         horizontal_flip=True,
         vertical_flip=True,
         brightness_range=[0.8, 1.2],
-        fill_mode='nearest',
-        validation_split=0.2  # 20% for validation (will split again for test)
+        fill_mode='nearest'
     )
     
-    # Validation/Test data generator (no augmentation, only rescale)
-    val_test_datagen = ImageDataGenerator(
-        rescale=1./255,
-        validation_split=0.2
-    )
-    
+    val_test_datagen = ImageDataGenerator(rescale=1./255)
+
+    # Auto-discover brinjal-only class subdirectories
+    def _discover_classes(split_dir, prefix):
+        if not os.path.isdir(split_dir):
+            raise FileNotFoundError(f"Split directory not found: {split_dir}")
+        dirs = sorted(d for d in os.listdir(split_dir)
+                      if d.startswith(prefix) and os.path.isdir(os.path.join(split_dir, d)))
+        if not dirs:
+            all_dirs = [d for d in os.listdir(split_dir) if os.path.isdir(os.path.join(split_dir, d))]
+            raise ValueError(
+                f"No subdirectories matching '{prefix}*' found in {split_dir}.\n"
+                f"Available: {all_dirs}\n"
+                f"Run 'python scripts/combine_datasets.py' first."
+            )
+        return dirs
+
+    brinjal_train_dirs = _discover_classes(config.TRAIN_DIR, config.CROP_FILTER)
+    brinjal_val_dirs   = _discover_classes(config.VAL_DIR,   config.CROP_FILTER)
+    brinjal_test_dirs  = _discover_classes(config.TEST_DIR,  config.CROP_FILTER)
+
     print(f"\nLoading data from: {config.DATA_DIR}")
-    
-    # Training generator
+    print(f"  Train: {config.TRAIN_DIR}")
+    print(f"  Val:   {config.VAL_DIR}")
+    print(f"  Brinjal classes found ({len(brinjal_train_dirs)}): {brinjal_train_dirs}")
+
     train_generator = train_datagen.flow_from_directory(
-        config.DATA_DIR,
+        config.TRAIN_DIR,
+        classes=brinjal_train_dirs,
         target_size=config.INPUT_SHAPE[:2],
         batch_size=config.BATCH_SIZE,
         class_mode='categorical',
-        subset='training',
         shuffle=True,
         seed=42
     )
-    
-    # Validation generator
+
     val_generator = val_test_datagen.flow_from_directory(
-        config.DATA_DIR,
+        config.VAL_DIR,
+        classes=brinjal_val_dirs,
         target_size=config.INPUT_SHAPE[:2],
         batch_size=config.BATCH_SIZE,
         class_mode='categorical',
-        subset='validation',
         shuffle=False,
         seed=42
     )
-    
-    # Get class names from generator
+
+    test_generator = val_test_datagen.flow_from_directory(
+        config.TEST_DIR,
+        classes=brinjal_test_dirs,
+        target_size=config.INPUT_SHAPE[:2],
+        batch_size=config.BATCH_SIZE,
+        class_mode='categorical',
+        shuffle=False,
+        seed=42
+    )
+
+    # Validate samples exist
+    for gen, name, split_dir in [
+        (train_generator, 'train', config.TRAIN_DIR),
+        (val_generator,   'val',   config.VAL_DIR),
+    ]:
+        if gen.samples == 0:
+            raise FileNotFoundError(
+                f"No images found in '{name}' split at: {split_dir}\n"
+                f"Check that images exist inside class subdirectories."
+            )
+
     class_indices = train_generator.class_indices
-    class_names = list(class_indices.keys())
-    num_classes = len(class_names)
-    
+    class_names   = sorted(class_indices.keys())
+    num_classes   = len(class_names)
+
     print(f"\nDataset Statistics:")
-    print(f"  - Training samples: {train_generator.samples}")
+    print(f"  - Training samples:   {train_generator.samples}")
     print(f"  - Validation samples: {val_generator.samples}")
-    print(f"  - Number of classes: {num_classes}")
+    print(f"  - Test samples:       {test_generator.samples}")
+    print(f"  - Number of classes:  {num_classes}")
     print(f"  - Class names: {class_names}")
     print(f"  - Batch size: {config.BATCH_SIZE}")
-    
+    print(f"  - Steps per epoch (train): {len(train_generator)}")
+
     # Save class labels to JSON
     labels_path = os.path.join(config.OUTPUT_DIR, "class_labels.json")
+    os.makedirs(config.OUTPUT_DIR, exist_ok=True)
     with open(labels_path, 'w') as f:
         json.dump({
             'class_indices': class_indices,
             'class_names': class_names,
-            'num_classes': num_classes
+            'num_classes': num_classes,
+            'crop': 'brinjal'
         }, f, indent=2)
     print(f"  - Class labels saved to: {labels_path}")
-    
-    return train_generator, val_generator, class_names, num_classes
+
+    return train_generator, val_generator, test_generator, class_names, num_classes
 
 
 def create_split_generators(config, train_dir, val_dir, test_dir):
@@ -622,6 +652,31 @@ def compile_model(model, learning_rate, num_classes):
     return model
 
 
+def _generator_to_tf_dataset(generator):
+    """
+    Convert a legacy Keras ImageDataGenerator flow to a tf.data.Dataset.
+    Required for Keras 3 compatibility — PyDatasetAdapter rejects generators
+    whose __len__ returns 0 even when steps_per_epoch is provided.
+    """
+    import tensorflow as tf
+    input_shape = generator.image_shape   # (H, W, C)
+    num_classes = generator.num_classes
+
+    def _gen():
+        for x_batch, y_batch in generator:
+            yield x_batch, y_batch
+
+    dataset = tf.data.Dataset.from_generator(
+        _gen,
+        output_signature=(
+            tf.TensorSpec(shape=(None, *input_shape), dtype=tf.float32),
+            tf.TensorSpec(shape=(None, num_classes),  dtype=tf.float32),
+        )
+    )
+    dataset = dataset.unbatch().batch(generator.batch_size).prefetch(tf.data.AUTOTUNE)
+    return dataset
+
+
 def train_model(model, train_gen, val_gen, config, phase='initial', epochs=None):
     """
     Train the model.
@@ -644,10 +699,16 @@ def train_model(model, train_gen, val_gen, config, phase='initial', epochs=None)
     
     callbacks = get_callbacks(config, phase)
     
+    # Convert legacy generators → tf.data.Dataset for Keras 3 compatibility
+    train_dataset = _generator_to_tf_dataset(train_gen)
+    val_dataset   = _generator_to_tf_dataset(val_gen)
+
     history = model.fit(
-        train_gen,
-        validation_data=val_gen,
+        train_dataset,
+        validation_data=val_dataset,
         epochs=epochs,
+        steps_per_epoch=len(train_gen),
+        validation_steps=len(val_gen),
         callbacks=callbacks,
         verbose=1
     )
@@ -1176,7 +1237,7 @@ def main():
     print("PHASE 1: Loading and Preparing Data")
     print("="*60)
     
-    train_gen, val_gen, class_names, num_classes = create_data_generators(config)
+    train_gen, val_gen, test_gen, class_names, num_classes = create_data_generators(config)
     
     # Update config with detected classes
     config.NUM_CLASSES = num_classes
@@ -1243,7 +1304,7 @@ def main():
     print("PHASE 5: Model Evaluation")
     print("="*60)
     
-    metrics = evaluate_model(model, val_gen, class_names, config)
+    metrics = evaluate_model(model, test_gen, class_names, config)
     
     # Save metrics
     metrics_path = os.path.join(config.OUTPUT_DIR, "final_metrics.json")

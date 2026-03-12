@@ -6,7 +6,7 @@ Common constants used by both backend and edge deployment
 # =============================================================================
 # Supported Crops
 # =============================================================================
-SUPPORTED_CROPS = ['brinjal', 'okra', 'tomato', 'chilli']
+SUPPORTED_CROPS = ['brinjal', 'tomato', 'chilli']
 
 # =============================================================================
 # Image Processing Constants
@@ -41,6 +41,7 @@ SEVERITY_COLORS = {
 # =============================================================================
 MODEL_CONFIG = {
     'h5_model': 'agrilite_hybrid.h5',
+    'keras_model': 'agrilite_hybrid.keras',
     'tflite_model': 'agrilite_hybrid.tflite',
     'class_labels': 'class_labels.json',
     'confidence_threshold': 0.5

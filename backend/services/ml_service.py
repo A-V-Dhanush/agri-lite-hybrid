@@ -12,10 +12,14 @@ import json
 import base64
 import random
 import logging
+import warnings
 from typing import Optional, Dict, Any, List
 
 import numpy as np
 from PIL import Image
+
+# Suppress Keras input structure warning (model works correctly with raw tensors)
+warnings.filterwarnings("ignore", message="The structure of `inputs` doesn't match")
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -38,8 +42,6 @@ class MLService:
     
     # Image preprocessing constants
     IMAGE_SIZE = (224, 224)
-    MEAN = [0.485, 0.456, 0.406]
-    STD = [0.229, 0.224, 0.225]
     
     def __init__(self, model_path: Optional[str] = None):
         """
@@ -68,6 +70,11 @@ class MLService:
         self.class_labels = self._load_class_labels()
         self.treatments = self.class_labels.get('treatments', {})
         self.crops = self.class_labels.get('crops', {})
+        
+        # Hybrid model class mapping (26-class output)
+        self.class_names = self.class_labels.get('class_names', [])
+        self.class_to_display = self.class_labels.get('class_to_display', {})
+        self.crop_class_ranges = self.class_labels.get('crop_class_ranges', {})
         
         # Try to load the model
         self._load_model()
@@ -99,22 +106,42 @@ class MLService:
             Default labels dictionary
         """
         return {
+            'class_names': [
+                'brinjal_Augmented_Healthy_Leaf', 'brinjal_Augmented_Insect_Pest_Disease',
+                'brinjal_Augmented_Leaf_Spot_Disease', 'brinjal_Augmented_Mosaic_Virus_Disease',
+                'brinjal_Augmented_Small_Leaf_Disease', 'brinjal_Augmented_White_Mold_Disease',
+                'brinjal_Augmented_Wilt_Disease',
+                'chilli_Chilli_Anthracnos', 'chilli_Chilli_Damping_Off',
+                'chilli_Chilli_Leaf_Curl_Virus', 'chilli_Chilli_Leaf_Spot',
+                'chilli_Chilli_Veinal_Mottle_Virus', 'chilli_Chilli__Whitefly',
+                'chilli_Chilli__Yellowish', 'chilli_Chilli__healthy',
+                'tomato_Bacterial_spot', 'tomato_Early_blight', 'tomato_Late_blight',
+                'tomato_Leaf_Mold', 'tomato_Septoria_leaf_spot',
+                'tomato_Spider_mites_Two_spotted_spider_mite', 'tomato_Target_Spot',
+                'tomato_Tomato_Yellow_Leaf_Curl_Virus', 'tomato_Tomato_mosaic_virus',
+                'tomato_healthy', 'tomato_powdery_mildew'
+            ],
+            'crop_class_ranges': {
+                'brinjal': [0, 6], 'chilli': [7, 14], 'tomato': [15, 25]
+            },
+            'class_to_display': {},
             'crops': {
                 'brinjal': {
-                    'diseases': ['Cercospora Leaf Spot', 'Little Leaf Disease', 
-                                'Phomopsis Blight', 'Healthy']
-                },
-                'okra': {
-                    'diseases': ['Yellow Vein Mosaic', 'Powdery Mildew',
-                                'Leaf Curl Disease', 'Healthy']
+                    'diseases': ['Healthy', 'Insect Pest Disease', 'Leaf Spot Disease',
+                                'Mosaic Virus Disease', 'Small Leaf Disease',
+                                'White Mold Disease', 'Wilt Disease']
                 },
                 'tomato': {
-                    'diseases': ['Early Blight', 'Late Blight', 'Bacterial Spot',
-                                'Septoria Leaf Spot', 'Healthy']
+                    'diseases': ['Bacterial Spot', 'Early Blight', 'Late Blight',
+                                'Leaf Mold', 'Septoria Leaf Spot',
+                                'Spider Mites (Two-spotted)', 'Target Spot',
+                                'Yellow Leaf Curl Virus', 'Mosaic Virus',
+                                'Healthy', 'Powdery Mildew']
                 },
                 'chilli': {
-                    'diseases': ['Leaf Curl Virus', 'Powdery Mildew',
-                                'Anthracnose', 'Bacterial Leaf Spot', 'Healthy']
+                    'diseases': ['Anthracnose', 'Damping Off', 'Leaf Curl Virus',
+                                'Leaf Spot', 'Veinal Mottle Virus', 'Whitefly',
+                                'Yellowish', 'Healthy']
                 }
             },
             'severity_levels': ['mild', 'medium', 'severe'],
@@ -134,11 +161,19 @@ class MLService:
         tflite_path = os.path.join(self.model_path, 'agrilite_hybrid.tflite')
         
         # Try Keras/H5 model
-        for model_file in [h5_path, keras_path]:
+        for model_file in [keras_path, h5_path]:
             if os.path.exists(model_file):
                 try:
                     import tensorflow as tf
-                    self.model = tf.keras.models.load_model(model_file)
+                    from cbam_layers import ChannelAttention, SpatialAttention, CBAM
+                    custom_objects = {
+                        'ChannelAttention': ChannelAttention,
+                        'SpatialAttention': SpatialAttention,
+                        'CBAM': CBAM,
+                    }
+                    self.model = tf.keras.models.load_model(
+                        model_file, custom_objects=custom_objects
+                    )
                     self.model_loaded = True
                     logger.info(f"Keras model loaded from {model_file}")
                     return True
@@ -197,11 +232,9 @@ class MLService:
         # Convert to numpy array
         img_array = np.array(image, dtype=np.float32)
         
-        # Normalize to [0, 1]
+        # Normalize to [0, 1] — matches training (rescale=1./255)
+        # No ImageNet mean/std normalization (include_preprocessing=False in model)
         img_array = img_array / 255.0
-        
-        # Apply ImageNet normalization
-        img_array = (img_array - self.MEAN) / self.STD
         
         # Add batch dimension
         img_array = np.expand_dims(img_array, axis=0)
@@ -235,6 +268,19 @@ class MLService:
             - environmental_risk: Risk assessment based on environment
         """
         try:
+            # Pre-inference image validation (classical CV)
+            validation = self._validate_leaf_image(image_data)
+            if not validation['valid']:
+                return {
+                    'success': False,
+                    'error': (
+                        'The uploaded image does not appear to be a valid '
+                        f'{crop} leaf. {validation["reason"]} '
+                        'Please upload a clear, close-up photo of a plant leaf.'
+                    ),
+                    'original_image_base64': self._image_to_base64(image_data),
+                }
+
             # Preprocess image
             processed_image = self.preprocess_image(image_data)
             
@@ -244,17 +290,13 @@ class MLService:
                 crop_diseases = self._get_default_labels()['crops'].get(crop, {}).get('diseases', [])
             
             # Run inference
+            mismatch_crop = None
             if self.model_loaded and not self.use_tflite:
                 # Keras model prediction
                 predictions = self.model.predict(processed_image, verbose=0)
-                disease_idx = np.argmax(predictions[0])
-                confidence = float(predictions[0][disease_idx]) * 100
-                
-                # Map to disease name
-                if disease_idx < len(crop_diseases):
-                    disease = crop_diseases[disease_idx]
-                else:
-                    disease = crop_diseases[0] if crop_diseases else 'Unknown'
+                disease, confidence, mismatch_crop = self._map_prediction_to_crop(
+                    predictions[0], crop
+                )
                     
             elif self.model_loaded and self.use_tflite:
                 # TFLite prediction
@@ -268,17 +310,37 @@ class MLService:
                 self.tflite_interpreter.invoke()
                 
                 predictions = self.tflite_interpreter.get_tensor(output_details[0]['index'])
-                disease_idx = np.argmax(predictions[0])
-                confidence = float(predictions[0][disease_idx]) * 100
-                
-                if disease_idx < len(crop_diseases):
-                    disease = crop_diseases[disease_idx]
-                else:
-                    disease = crop_diseases[0] if crop_diseases else 'Unknown'
+                disease, confidence, mismatch_crop = self._map_prediction_to_crop(
+                    predictions[0], crop
+                )
             else:
                 # Placeholder prediction for development
                 disease, confidence = self._placeholder_prediction(crop, crop_diseases)
             
+            # Reject cross-crop mismatch
+            if mismatch_crop:
+                return {
+                    'success': False,
+                    'error': (
+                        f'This image appears to be a {mismatch_crop} leaf, '
+                        f'not {crop}. Please select the correct crop type '
+                        f'or upload a {crop} leaf image.'
+                    ),
+                    'original_image_base64': self._image_to_base64(image_data),
+                }
+            
+            # Log low-confidence predictions but still allow them through
+            # (pre-inference CV validation already filters non-plant images)
+            if self.model_loaded:
+                crop_range = self.crop_class_ranges.get(crop)
+                num_crop_classes = (crop_range[1] - crop_range[0] + 1) if crop_range else 26
+                random_chance = 1.0 / num_crop_classes
+                if confidence < random_chance:
+                    logger.warning(
+                        f"Low confidence prediction for {crop}: "
+                        f"{disease} ({confidence*100:.1f}%) — below random chance"
+                    )
+
             # Determine severity based on confidence and disease type
             severity = self._determine_severity(disease, confidence)
             
@@ -301,7 +363,7 @@ class MLService:
                 'crop': crop,
                 'disease': disease,
                 'severity': severity,
-                'confidence': round(confidence, 1),
+                'confidence': round(min(confidence, 1.0), 4),
                 'treatment': treatment,
                 'heatmap_base64': heatmap_base64,
                 'original_image_base64': original_base64,
@@ -318,6 +380,166 @@ class MLService:
                 'error': str(e)
             }
     
+    def _map_prediction_to_crop(
+        self,
+        predictions: np.ndarray,
+        crop: str
+    ) -> tuple:
+        """
+        Map 26-class hybrid model output to a crop-specific disease.
+        
+        Filters predictions to only classes belonging to the requested crop,
+        then picks the highest-confidence class within that crop.
+        Also detects cross-crop mismatches.
+        
+        Args:
+            predictions: Model output array of shape (26,)
+            crop: Requested crop type (brinjal, chilli, tomato)
+            
+        Returns:
+            Tuple of (display_disease_name, confidence, mismatch_crop_or_None)
+        """
+        # Apply softmax if predictions are logits (don't sum to ~1)
+        pred_sum = float(np.sum(predictions))
+        if pred_sum < 0.99 or pred_sum > 1.01:
+            exp_preds = np.exp(predictions - np.max(predictions))
+            predictions = exp_preds / np.sum(exp_preds)
+        
+        # Find the global best prediction across ALL crops
+        global_best_idx = int(np.argmax(predictions))
+        global_best_conf = float(predictions[global_best_idx])
+        actual_crop = None
+        for c, (s, e) in self.crop_class_ranges.items():
+            if s <= global_best_idx <= e:
+                actual_crop = c
+                break
+        
+        crop_range = self.crop_class_ranges.get(crop)
+        mismatch_crop = None
+        
+        if crop_range and self.class_names:
+            start_idx, end_idx = crop_range
+            # Extract only predictions for this crop's classes
+            crop_preds = predictions[start_idx:end_idx + 1]
+            crop_best_idx = np.argmax(crop_preds)
+            global_idx = start_idx + crop_best_idx
+            confidence = float(crop_preds[crop_best_idx])  # 0-1 ratio
+            
+            # Map to human-readable name
+            class_name = self.class_names[global_idx]
+            disease = self.class_to_display.get(class_name, class_name)
+            
+            # Detect cross-crop mismatch: global best is a different crop
+            # AND that crop's confidence is much higher than selected crop
+            if actual_crop and actual_crop != crop and global_best_conf > confidence * 3:
+                mismatch_crop = actual_crop
+        else:
+            # Fallback: use global argmax
+            disease_idx = np.argmax(predictions)
+            confidence = float(predictions[disease_idx])  # 0-1 ratio
+            if disease_idx < len(self.class_names):
+                class_name = self.class_names[disease_idx]
+                disease = self.class_to_display.get(class_name, class_name)
+            else:
+                disease = 'Unknown'
+        
+        return disease, confidence, mismatch_crop
+    
+    def _validate_leaf_image(self, image_data: bytes) -> Dict[str, Any]:
+        """
+        Validate that the uploaded image is a plant leaf using classical CV.
+        
+        Combines three checks:
+        1. Green/plant color ratio (HSV analysis)
+        2. Texture entropy (Shannon entropy of grayscale histogram)
+        3. Edge pattern density (Canny edge detection)
+        
+        Returns:
+            Dict with 'valid' (bool), 'reason' (str), and 'scores' (dict)
+        """
+        import cv2
+
+        image = Image.open(io.BytesIO(image_data))
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
+        # Use a moderate size for analysis — fast but enough detail
+        image = image.resize((256, 256), Image.Resampling.LANCZOS)
+        img_np = np.array(image)
+
+        # ------------------------------------------------------------------
+        # Check 1: Green / plant color ratio (HSV)
+        # ------------------------------------------------------------------
+        hsv = cv2.cvtColor(img_np, cv2.COLOR_RGB2HSV)
+
+        # Green foliage:    H 25-95, S 25-255, V 25-255
+        green_mask = cv2.inRange(hsv, (25, 25, 25), (95, 255, 255))
+        # Brown / diseased:  H 5-25,  S 30-255, V 30-200
+        brown_mask = cv2.inRange(hsv, (5, 30, 30), (25, 255, 200))
+        # Dark/wilted green: H 25-95, S 15-255, V 10-100
+        dark_mask = cv2.inRange(hsv, (25, 15, 10), (95, 255, 100))
+
+        plant_pixels = cv2.countNonZero(green_mask | brown_mask | dark_mask)
+        total_pixels = hsv.shape[0] * hsv.shape[1]
+        green_ratio = plant_pixels / total_pixels
+
+        # ------------------------------------------------------------------
+        # Check 2: Texture entropy (Shannon entropy of grayscale histogram)
+        # ------------------------------------------------------------------
+        gray = cv2.cvtColor(img_np, cv2.COLOR_RGB2GRAY)
+        hist = cv2.calcHist([gray], [0], None, [256], [0, 256]).flatten()
+        hist = hist / hist.sum()  # normalise to probabilities
+        hist = hist[hist > 0]     # avoid log(0)
+        entropy = float(-np.sum(hist * np.log2(hist)))
+
+        # ------------------------------------------------------------------
+        # Check 3: Edge density (Canny)
+        # ------------------------------------------------------------------
+        edges = cv2.Canny(gray, 50, 150)
+        edge_ratio = float(cv2.countNonZero(edges)) / total_pixels
+
+        scores = {
+            'green_ratio': round(green_ratio, 4),
+            'entropy': round(entropy, 4),
+            'edge_ratio': round(edge_ratio, 4),
+        }
+
+        # ------------------------------------------------------------------
+        # Decision logic (strict mode)
+        # ------------------------------------------------------------------
+        reasons: List[str] = []
+
+        if green_ratio < 0.15:
+            reasons.append(
+                f'Low plant-color content ({green_ratio*100:.1f}%). '
+                'The image does not appear to contain a plant leaf.'
+            )
+        if entropy < 4.0:
+            reasons.append(
+                f'Image texture too uniform (entropy={entropy:.2f}). '
+                'This may be a solid color, gradient, or synthetic image.'
+            )
+        if edge_ratio < 0.01:
+            reasons.append(
+                'Image has almost no detail (very few edges detected). '
+                'Please upload a clear photo of a leaf.'
+            )
+        if edge_ratio > 0.40:
+            reasons.append(
+                f'Edge density too high ({edge_ratio*100:.1f}%). '
+                'This appears to be a screenshot or text-heavy image.'
+            )
+
+        if reasons:
+            logger.info(f"Image validation FAILED: {scores} | {reasons[0]}")
+            return {
+                'valid': False,
+                'reason': reasons[0],  # report the first failure
+                'scores': scores,
+            }
+
+        logger.debug(f"Image validation passed: {scores}")
+        return {'valid': True, 'reason': '', 'scores': scores}
+
     def _placeholder_prediction(
         self,
         crop: str,
@@ -347,13 +569,13 @@ class MLService:
         
         disease = random.choices(diseases, weights=weights, k=1)[0]
         
-        # Generate realistic confidence
+        # Generate realistic confidence (0-1 ratio)
         if disease.lower() == 'healthy':
-            confidence = random.uniform(85, 99)
+            confidence = random.uniform(0.85, 0.99)
         else:
-            confidence = random.uniform(75, 98)
+            confidence = random.uniform(0.75, 0.98)
         
-        logger.info(f"Placeholder prediction: {disease} ({confidence:.1f}%)")
+        logger.info(f"Placeholder prediction: {disease} ({confidence*100:.1f}%)")
         
         return disease, confidence
     
@@ -382,7 +604,7 @@ class MLService:
         else:
             return 'severe'
     
-    def get_treatment(self, disease: str, severity: str) -> List[str]:
+    def get_treatment(self, disease: str, severity: str) -> List[Dict[str, str]]:
         """
         Get treatment recommendations for a disease.
         
@@ -391,28 +613,45 @@ class MLService:
             severity: Severity level
             
         Returns:
-            List of treatment recommendations
+            List of structured treatment recommendation dicts
         """
         # Look up treatment in loaded data
         disease_treatments = self.treatments.get(disease, {})
         
         if disease_treatments:
-            return disease_treatments.get(severity, disease_treatments.get('medium', []))
-        
-        # Default treatments if not found
-        if disease.lower() == 'healthy':
-            return [
+            raw = disease_treatments.get(severity, disease_treatments.get('medium', []))
+        elif disease.lower() == 'healthy':
+            raw = [
                 "No treatment needed - plant appears healthy",
                 "Continue regular maintenance and monitoring",
                 "Ensure proper watering and fertilization"
             ]
+        else:
+            raw = [
+                "Consult with a local agricultural extension officer",
+                "Remove affected plant parts if possible",
+                "Ensure proper plant spacing for air circulation",
+                "Consider appropriate fungicide or pesticide treatment"
+            ]
         
-        return [
-            "Consult with a local agricultural extension officer",
-            "Remove affected plant parts if possible",
-            "Ensure proper plant spacing for air circulation",
-            "Consider appropriate fungicide or pesticide treatment"
-        ]
+        # Convert plain strings to structured objects for the frontend
+        organic_keywords = ('neem', 'organic', 'compost', 'mulch', 'spacing',
+                           'circulation', 'maintenance', 'monitoring', 'watering',
+                           'prune', 'remove', 'healthy', 'companion', 'rotation')
+        structured = []
+        for item in raw:
+            if isinstance(item, dict):
+                structured.append(item)
+            else:
+                is_organic = any(w in item.lower() for w in organic_keywords)
+                structured.append({
+                    'type': 'organic' if is_organic else 'chemical',
+                    'name': item,
+                    'dosage': '',
+                    'application': '',
+                    'schedule': ''
+                })
+        return structured
     
     def _generate_heatmap(
         self,
@@ -630,9 +869,10 @@ class MLService:
         
         # High humidity increases fungal disease risk
         fungal_diseases = [
-            'Powdery Mildew', 'Cercospora Leaf Spot', 
-            'Phomopsis Blight', 'Early Blight', 'Late Blight',
-            'Septoria Leaf Spot', 'Anthracnose'
+            'Powdery Mildew', 'Leaf Spot Disease', 'Leaf Spot',
+            'White Mold Disease', 'Early Blight', 'Late Blight',
+            'Septoria Leaf Spot', 'Anthracnose', 'Leaf Mold',
+            'Target Spot', 'Damping Off'
         ]
         
         if disease in fungal_diseases and 'high_humidity' in risk_factors:

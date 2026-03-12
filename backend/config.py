@@ -85,7 +85,7 @@ class Config:
         'MODEL_PATH',
         os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models')
     )
-    MODEL_NAME = os.getenv('MODEL_NAME', 'agrilite_hybrid.h5')
+    MODEL_NAME = os.getenv('MODEL_NAME', 'agrilite_hybrid.keras')
     CLASS_LABELS_FILE = os.getenv('CLASS_LABELS_FILE', 'class_labels.json')
     
     # ==========================================================================

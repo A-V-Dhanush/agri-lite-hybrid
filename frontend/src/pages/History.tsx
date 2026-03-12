@@ -309,7 +309,7 @@ const History: React.FC = () => {
   const [selectedCrop, setSelectedCrop] = useState<string>('');
   const [selectedSeverity, setSelectedSeverity] = useState<string>('');
 
-  const crops = ['Brinjal', 'Okra', 'Tomato', 'Chilli'];
+  const crops = ['Brinjal', 'Tomato', 'Chilli'];
   const severities = ['healthy', 'mild', 'moderate', 'severe'];
 
   // ---------------------------------------------------------------------------

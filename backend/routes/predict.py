@@ -83,14 +83,14 @@ def predict():
     if not crop:
         return error_response(
             'Crop type is required',
-            details={'field': 'crop', 'allowed': ['brinjal', 'okra', 'tomato', 'chilli']},
+            details={'field': 'crop', 'allowed': ['brinjal', 'tomato', 'chilli']},
             status_code=400
         )
     
     if not validate_crop(crop):
         return error_response(
             f"Invalid crop type: '{crop}'",
-            details={'allowed': ['brinjal', 'okra', 'tomato', 'chilli']},
+            details={'allowed': ['brinjal', 'tomato', 'chilli']},
             status_code=400
         )
     
@@ -147,7 +147,7 @@ def predict():
         if not result.get('success', False):
             return error_response(
                 result.get('error', 'Prediction failed'),
-                status_code=500
+                status_code=400
             )
         
         # =======================================================================
@@ -184,7 +184,7 @@ def predict():
         
         current_app.logger.info(
             f"Prediction completed: {crop} - {result['disease']} "
-            f"({result['confidence']:.1f}%)"
+            f"({result['confidence']*100:.1f}%)"
         )
         
         return jsonify({
@@ -193,7 +193,8 @@ def predict():
         }), 200
         
     except Exception as e:
-        current_app.logger.error(f"Prediction error: {e}")
+        import traceback
+        current_app.logger.error(f"Prediction error: {e}\n{traceback.format_exc()}")
         return error_response(
             'An error occurred during prediction',
             details=str(e) if current_app.debug else None,
@@ -236,7 +237,7 @@ def predict_base64():
     if not crop or not validate_crop(crop):
         return error_response(
             'Valid crop type is required',
-            details={'allowed': ['brinjal', 'okra', 'tomato', 'chilli']},
+            details={'allowed': ['brinjal', 'tomato', 'chilli']},
             status_code=400
         )
     
@@ -276,7 +277,7 @@ def predict_base64():
         if not result.get('success', False):
             return error_response(
                 result.get('error', 'Prediction failed'),
-                status_code=500
+                status_code=400
             )
         
         return jsonify({

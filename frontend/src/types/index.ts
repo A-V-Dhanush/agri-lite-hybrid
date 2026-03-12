@@ -102,6 +102,17 @@ export interface PredictionRequest {
 }
 
 /**
+ * Structured treatment recommendation
+ */
+export interface TreatmentItem {
+  type: string;
+  name: string;
+  dosage: string;
+  application: string;
+  schedule: string;
+}
+
+/**
  * Prediction result from API
  */
 export interface PredictionResult {
@@ -109,7 +120,7 @@ export interface PredictionResult {
   disease: string;
   severity: Severity;
   confidence: number;
-  treatment: string[];
+  treatment: TreatmentItem[];
   heatmap_base64: string;
   original_image_base64: string;
   environmental_risk: 'normal' | 'elevated' | 'high' | 'unknown';
@@ -140,7 +151,7 @@ export interface DetectionHistory {
   disease: string;
   severity: Severity;
   confidence: number;
-  treatment: string[];
+  treatment: TreatmentItem[];
   temperature: number | null;
   humidity: number | null;
   environmental_risk: string | null;

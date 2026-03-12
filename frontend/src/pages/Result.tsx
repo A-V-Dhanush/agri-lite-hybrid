@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { useDetection } from '../contexts/DetectionContext';
 import { useAuth } from '../contexts/AuthContext';
+import { TreatmentItem } from '../types';
 import toast from 'react-hot-toast';
 
 // ---------------------------------------------------------------------------
@@ -68,13 +69,7 @@ const SeverityBadge: React.FC<SeverityBadgeProps> = ({ severity, size = 'md' }) 
 // Treatment Card Component
 // ---------------------------------------------------------------------------
 interface TreatmentCardProps {
-  treatment: {
-    type: string;
-    name: string;
-    dosage: string;
-    application: string;
-    schedule: string;
-  };
+  treatment: TreatmentItem;
 }
 
 const TreatmentCard: React.FC<TreatmentCardProps> = ({ treatment }) => {

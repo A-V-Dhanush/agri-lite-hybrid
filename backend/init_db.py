@@ -56,25 +56,16 @@ def init_database():
             {
                 'name': 'brinjal',
                 'display_name': 'Brinjal (Eggplant)',
-                'description': 'Common vegetable crop susceptible to various leaf spot and blight diseases.',
+                'description': 'Common vegetable crop susceptible to various fungal and viral diseases.',
                 'image_url': '/images/crops/brinjal.jpg',
                 'diseases': json.dumps([
-                    'Cercospora Leaf Spot',
-                    'Little Leaf Disease',
-                    'Phomopsis Blight',
-                    'Healthy'
-                ])
-            },
-            {
-                'name': 'okra',
-                'display_name': 'Okra (Ladies Finger)',
-                'description': 'Popular vegetable vulnerable to viral infections and fungal diseases.',
-                'image_url': '/images/crops/okra.jpg',
-                'diseases': json.dumps([
-                    'Yellow Vein Mosaic',
-                    'Powdery Mildew',
-                    'Leaf Curl Disease',
-                    'Healthy'
+                    'Healthy',
+                    'Insect Pest Disease',
+                    'Leaf Spot Disease',
+                    'Mosaic Virus Disease',
+                    'Small Leaf Disease',
+                    'White Mold Disease',
+                    'Wilt Disease'
                 ])
             },
             {
@@ -83,11 +74,17 @@ def init_database():
                 'description': 'Widely cultivated crop affected by various bacterial and fungal diseases.',
                 'image_url': '/images/crops/tomato.jpg',
                 'diseases': json.dumps([
+                    'Bacterial Spot',
                     'Early Blight',
                     'Late Blight',
-                    'Bacterial Spot',
+                    'Leaf Mold',
                     'Septoria Leaf Spot',
-                    'Healthy'
+                    'Spider Mites (Two-spotted)',
+                    'Target Spot',
+                    'Yellow Leaf Curl Virus',
+                    'Mosaic Virus',
+                    'Healthy',
+                    'Powdery Mildew'
                 ])
             },
             {
@@ -96,8 +93,14 @@ def init_database():
                 'description': 'Spice crop prone to viral infections and fungal diseases.',
                 'image_url': '/images/crops/chilli.jpg',
                 'diseases': json.dumps([
+                    'Anthracnose',
+                    'Damping Off',
                     'Leaf Curl Virus',
-                    'Powdery Mildew',
+                    'Leaf Spot',
+                    'Veinal Mottle Virus',
+                    'Whitefly',
+                    'Yellowish',
+                    'Healthy'
                     'Anthracnose',
                     'Bacterial Leaf Spot',
                     'Healthy'
